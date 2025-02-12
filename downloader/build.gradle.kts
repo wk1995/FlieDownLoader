@@ -1,8 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("custom.android.plugin")
 }
-
+PublishInfo {
+    groupId = "cn.entertech.android" // 库的组织，使用域名表示
+    artifactId = "downloader" // 库名称
+    version = "0.0.1" // 库版本
+}
 android {
     namespace = "cn.entertech.file.downloader"
     compileSdk = 34
@@ -18,8 +23,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -33,7 +37,7 @@ android {
 }
 
 dependencies {
-
+    api(libs.log.api)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

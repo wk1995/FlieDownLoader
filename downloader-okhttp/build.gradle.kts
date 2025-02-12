@@ -1,20 +1,22 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("custom.android.plugin")
 }
-
+PublishInfo{
+    groupId = "cn.entertech.android" // 库的组织，使用域名表示
+    artifactId = "downloader-okhttp" // 库名称
+    version = "0.0.1" // 库版本
+}
 android {
-    namespace = "cn.entertech.fliedownloader"
+    namespace = "cn.entertech.downloader.okhttp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "cn.entertech.fliedownloader"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -36,13 +38,11 @@ android {
 }
 
 dependencies {
-    implementation (libs.downloader)
-    implementation (libs.downloader.okhttp)
+    implementation(libs.okhttp)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
+    api(project(":downloader"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
