@@ -5,4 +5,5 @@ interface IDownloadTask {
     fun start()
     fun cancel()
     fun getDownloadId(): String
+    fun setDownloadListener(listener: IDownloadListener?)
 }

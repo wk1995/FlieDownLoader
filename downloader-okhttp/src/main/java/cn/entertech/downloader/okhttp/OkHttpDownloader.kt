@@ -3,7 +3,6 @@ package cn.entertech.downloader.okhttp
 import cn.entertech.file.downloader.BaseDownloader
 import cn.entertech.file.downloader.DownloaderException
 import cn.entertech.file.downloader.IDownloadConfig
-import cn.entertech.file.downloader.IDownloadListener
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -14,11 +13,8 @@ import java.io.IOException
 
 // 具体实现示例（OkHttp）
 class OkHttpDownloader(
-    url: String,
-    listener: IDownloadListener,
-    config: IDownloadConfig,
-    private val client: OkHttpClient
-) : BaseDownloader(url, listener, config) {
+    url: String, config: IDownloadConfig, private val client: OkHttpClient
+) : BaseDownloader(url, config) {
     private var requestCall: Call? = null
     override fun executeDownload() {
         val downloadId = getDownloadId()
@@ -27,7 +23,7 @@ class OkHttpDownloader(
         requestCall = client.newCall(request)
         requestCall?.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                listener.onFailure(downloadId, DownloaderException.DownloadException())
+                mDownloadListener?.onFailure(downloadId, DownloaderException.DownloadException())
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -45,9 +41,9 @@ class OkHttpDownloader(
                             current += bytesRead
                             handleProgress(current, total)
                         }
-                        listener.onSuccess(downloadId, outputFile)
+                        mDownloadListener?.onSuccess(downloadId, outputFile)
                     } catch (e: Exception) {
-                        listener.onFailure(
+                        mDownloadListener?.onFailure(
                             downloadId,
                             DownloaderException.Canceled("onResponse ${e.message ?: "null"}")
                         )

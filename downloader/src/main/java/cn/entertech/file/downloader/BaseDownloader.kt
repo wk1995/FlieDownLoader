@@ -2,29 +2,33 @@ package cn.entertech.file.downloader
 
 // 核心下载器（模板方法模式）
 abstract class BaseDownloader(
-    protected val url: String,
-    protected val listener: IDownloadListener,
-    protected val config: IDownloadConfig
+    protected val url: String, protected val config: IDownloadConfig
 ) : IDownloadTask {
 
     private var isCanceled = false
     private var lastUpdateTime = 0L
     private val progressInterval = 100L // 进度更新间隔
 
+    var mDownloadListener: IDownloadListener? = null
+
+    override fun setDownloadListener(listener: IDownloadListener?) {
+        mDownloadListener = listener
+    }
+
     final override fun start() {
         if (!checkNetwork()) {
-            listener.onFailure(
+            mDownloadListener?.onFailure(
                 getDownloadId(), DownloaderException.NetworkError()
             )
             return
         }
 
-        listener.onStart(getDownloadId())
+        mDownloadListener?.onStart(getDownloadId())
 
         try {
             executeDownload()
         } catch (e: Exception) {
-            listener.onFailure(
+            mDownloadListener?.onFailure(
                 getDownloadId(), DownloaderException.DownloadException(errorMsg = e.message ?: "")
             )
         }
@@ -36,7 +40,7 @@ abstract class BaseDownloader(
         val now = System.currentTimeMillis()
         if (now - lastUpdateTime >= progressInterval || current == total) {
             val progress = (current * 100 / total).toInt()
-            listener.onProgress(getDownloadId(), progress, current, total)
+            mDownloadListener?.onProgress(getDownloadId(), progress, current, total)
             lastUpdateTime = now
         }
     }
